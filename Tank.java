@@ -15,25 +15,27 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.geom.*;
 import java.awt.image.*;
+import java.io.*;
 public class Tank {
 	private Image pic;
 	private Rectangle box;
 	private double x,y,w,h,angle,speed,mx,my,vx,vy;
 	private int shootdelay, moving;
-    public Tank(double x,double y,double w,double h, double ang, double speed, Image img) {
-    	this.x=x;
-    	this.y=y;
-    	this.w=w;
-    	this.h=h;
-    	angle=ang;
-		this.speed=speed;
+    public Tank(String in) {
+    	String[] info=in.split(",");
+    	x=Double.parseDouble(info[0]);
+    	y=Double.parseDouble(info[1]);
+    	w=Double.parseDouble(info[2]);
+    	h=Double.parseDouble(info[3]);
+    	angle=Double.parseDouble(info[4]);
+		speed=Double.parseDouble(info[5]);
     	vx=speed*Math.cos(Math.toRadians(angle));
     	vy=speed*Math.sin(Math.toRadians(angle));
     	mx=x+w/2;
     	my=y+h/2;
     	shootdelay=0;
     	moving=0;
-    	pic=img;
+    	pic=new ImageIcon(info[6]).getImage();
     }
     
     public Bullet shoot(){
@@ -89,7 +91,7 @@ public class Tank {
 		g2D.transform(at);
 		g2D.drawImage(pic,(int)x,(int)y,null);
 		g2D.setTransform(saveXform);
-   		g.fillRect((int)x,(int)y,(int)w,(int)h);
+   		//g.fillRect((int)x,(int)y,(int)w,(int)h);
    	}
    	
    	public double getX(){

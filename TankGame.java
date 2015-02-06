@@ -4,7 +4,8 @@ import javax.swing.*;
 import java.util.*;
 import java.awt.MouseInfo;
 import java.io.*;
-//approximate hitbox, if turned, hitmox can still stay the same
+//approximate hitbox, if turned, hitbox can still stay the same
+//add powerups if time
 public class TankGame extends JFrame implements ActionListener{
 	javax.swing.Timer myTimer;   
 	GamePanel game;
@@ -12,7 +13,7 @@ public class TankGame extends JFrame implements ActionListener{
     public TankGame() {
 		super("Tank Stuff");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1200,850);
+		setSize(1205,950);
 
 		myTimer = new javax.swing.Timer(10, this);	 // trigger every 10 ms
 		game = new GamePanel(this);
@@ -37,44 +38,57 @@ public class TankGame extends JFrame implements ActionListener{
     }
 }
 
+//for death: show explosion, wait a while, switch maps
 class GamePanel extends JPanel implements KeyListener{
-	private boolean []keys;
-
-	private Tank p;
-	private Image back;
+	private boolean[] keys;
+	private int[] ppos,epos;//player position and enemy position
+	private boolean playing;
+	private int pwins,ewins,mapcount;
+	private Tank p,e;
 	private TankGame mainFrame;
-	private Image tankPic;
 	private ArrayList<Bullet> bullets;
 	private ArrayList<Wall> walls;
-	private Wall wall1;
 	
 	public GamePanel(TankGame m){
 		keys = new boolean[KeyEvent.KEY_LAST+1];
 		bullets=new ArrayList<Bullet>();
 		walls=new ArrayList<Wall>();
 		mainFrame = m;    
-		setSize(1200,800);
+		setSize(1200,900);
         addKeyListener(this);
-        p=new Tank(170,170,39,39,0,4,new ImageIcon("tank1.png").getImage());
-        //read walls from text file
-        Scanner infile=null;
-    	try{
-    		infile=new Scanner(new File("map1.txt"));
-    	}
-    	catch(IOException ex){
-    		System.out.println("That file apparently doesn't exist");
-    	}
-    	int n=Integer.parseInt(infile.nextLine());
-    	for (int i=0;i<n;i++){
-    		walls.add(new Wall(infile.nextLine()));
-    	}
+        pwins=0;
+    	ewins=0;
+    	mapcount=1;
+    	newLevel();
+        //read walls and tank information from text files
 
-        
-        
-        //setFocusable(true);
-        //requestFocus();
 	}
-	
+	public void clearLevel(){
+		bullets.clear();
+		walls.clear();
+	}
+		
+	public void newLevel(){
+		Scanner infile=null;
+		while (infile==null){
+	    	try{
+	    		infile=new Scanner(new File("map"+(int)(mapcount*Math.random())+".txt"));
+	    	}
+	    	catch(IOException ex){
+	    		System.out.println("Don't mess up the maps");
+	    	}
+	    	catch(Exception ex){
+	    		System.out.println("Something wen tmore wrong than usual");
+	    	}
+	    	
+		}
+		p=new Tank(infile.nextLine());
+	    e=new Tank(infile.nextLine());
+	    int n=Integer.parseInt(infile.nextLine());
+	    for (int i=0;i<n;i++){
+	    	walls.add(new Wall(infile.nextLine()));
+		}
+	}
     public void addNotify() {
         super.addNotify();
         requestFocus();
@@ -84,8 +98,12 @@ class GamePanel extends JPanel implements KeyListener{
     public void bulPhysics(){
     	for (int i=bullets.size()-1; i> -1; i--){//needed to unmess up arraylist
     		Bullet bul=bullets.get(i);
+    		//stuff broke here
 	    	if (p.bulCollide(bul)){
-				System.out.println("hi");
+				playing=false;
+			}
+			if (e.bulCollide(bul)){
+				playing=false;
 			}
 			for (Wall w:walls){
 				if (w.collide(bul)){
@@ -100,13 +118,17 @@ class GamePanel extends JPanel implements KeyListener{
     }
     
     public void tankPhysics(){
+    	p.move();
+		e.move();
     	for (Wall w:walls){
 			w.collide(p);
+			w.collide(e);
 		}
     }
 	
 	public void pactions(){
 		p.delayer();
+		e.delayer();
 		//has it so the tank only actually "moves" when pressing the up or down keys
 		if(keys[KeyEvent.VK_W]){
 			p.setMoving(1);
@@ -117,19 +139,35 @@ class GamePanel extends JPanel implements KeyListener{
 		else{
 			p.setMoving(0);
 		}
-		//even with checking going left before checking going right, you still can't shoot while moving forwards and turning left
-		//you can also turn both ways going backwards and shoot
-		//works when shooting isn't spacebar......
 		if(keys[KeyEvent.VK_A]){
 			p.turn(-3);
 		}
 		if(keys[KeyEvent.VK_D]){
 			p.turn(3);//3
 		}
-		if(keys[KeyEvent.VK_SPACE]&&p.getDelay()==0){
+		if(keys[KeyEvent.VK_V]&&p.getDelay()==0){
 			bullets.add(p.shoot());
 		}
-		p.move();
+		
+		if(keys[KeyEvent.VK_UP]){
+			e.setMoving(1);
+		}
+		else if(keys[KeyEvent.VK_DOWN]){
+			e.setMoving(-1);
+		}
+		else{
+			e.setMoving(0);
+		}
+		if(keys[KeyEvent.VK_LEFT]){ 
+			e.turn(-3);
+		}
+		if(keys[KeyEvent.VK_RIGHT]){
+			e.turn(3);//3
+		}
+		if(keys[KeyEvent.VK_P]&&e.getDelay()==0){
+			bullets.add(e.shoot());
+		}
+
 	}
 	
     public void keyTyped(KeyEvent e) {}
@@ -148,6 +186,7 @@ class GamePanel extends JPanel implements KeyListener{
     	g.fillRect(0,0,getWidth(),getHeight());
 		g.setColor(Color.blue);  
 		p.drawTank(g);
+		e.drawTank(g);
 		g.setColor(new Color(77,77,77));
 		for (Wall w:walls){
 			w.drawRect(g);
