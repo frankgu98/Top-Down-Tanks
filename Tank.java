@@ -18,7 +18,6 @@ import java.awt.image.*;
 import java.io.*;
 public class Tank {
 	private Image pic;
-	private Rectangle box;
 	private double x,y,w,h,angle,speed,mx,my,vx,vy;
 	private int shootdelay, moving;
     public Tank(String in) {
@@ -39,8 +38,8 @@ public class Tank {
     }
     
     public Bullet shoot(){
-	    Bullet b= new Bullet(mx+.15*speed*w*Math.cos(Math.toRadians(angle))-3,my+.15*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle,10);//-3 on mx and my needed to center bullet
-	    shootdelay=40;//20
+	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle,9);//-3 on mx and my needed to center bullet
+	    shootdelay=30;//20
     	return b;
     }
     
@@ -83,7 +82,6 @@ public class Tank {
    
    	//what is even going on here
    	public void drawTank(Graphics g){
-   		
    		Graphics2D g2D = (Graphics2D)g;
 		AffineTransform saveXform = g2D.getTransform();
 		AffineTransform at = new AffineTransform();
@@ -94,6 +92,9 @@ public class Tank {
    		//g.fillRect((int)x,(int)y,(int)w,(int)h);
    	}
    	
+   	public Image getPic(){
+   		return pic;
+   	}
    	public double getX(){
    		return x;
    	}
