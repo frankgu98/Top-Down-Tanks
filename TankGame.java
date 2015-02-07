@@ -75,7 +75,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
         actionsenabled=false;
         pwins=0;
     	ewins=0;
-    	mapcount=1;
+    	mapcount=2;
     	screen=MENU;
         //read walls and tank information from text files
 	}
@@ -109,8 +109,8 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	}
 	
 	public void playingFunctions(){
+		System.out.println(actionsenabled);
 		if(screen==GAME){
-			System.out.println(actionsenabled);
 			checkEnded();
 			playerActions();
 			bulPhysics();
