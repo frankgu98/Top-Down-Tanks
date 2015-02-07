@@ -129,6 +129,12 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	}
 	
 	public void clearLevel(){
+		try {
+    		Thread.sleep(1000);
+		} 
+		catch (InterruptedException e) {
+    		Thread.currentThread().interrupt();
+		}
 		bullets.clear();
 		walls.clear();
 	}
