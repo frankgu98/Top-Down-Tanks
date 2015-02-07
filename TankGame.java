@@ -12,7 +12,7 @@ public class TankGame extends JFrame implements ActionListener{
     public TankGame() {
 		super("Tank Stuff");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1205,950);
+		setSize(1205,928);
 		
 		myTimer = new javax.swing.Timer(10, this);	 // trigger every 10 ms
 		game = new GamePanel(this);
@@ -30,6 +30,7 @@ public class TankGame extends JFrame implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent evt){
+		game.menuFunctions();
 		game.playingFunctions();
 		game.repaint();
 	}
@@ -48,6 +49,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	private int screen,mousex,mousey;
 	private boolean playing,actionsenabled;
 	private int pwins,ewins,mapcount;
+	private Image menuPic;
 	private FButton start, controls, quit;
 	private Tank p,e;
 	private TankGame mainFrame;
@@ -58,20 +60,23 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 		keys = new boolean[KeyEvent.KEY_LAST+1];
 		bullets=new ArrayList<Bullet>();
 		walls=new ArrayList<Wall>();
-		mainFrame = m;    
+		mainFrame = m;
 		setSize(1200,900);
         addKeyListener(this);
         addMouseMotionListener(this);
 		addMouseListener(this);
-        playing=false;
+
+    	start=new FButton(386,370,430,47,"START");
+    	controls=new FButton(386,458,430,47,"CONTROLS");
+    	quit=new FButton(387,548,430,47,"QUIT");
+    	
+    	menuPic=new ImageIcon("menu.png").getImage();
+    	playing=false;
         actionsenabled=false;
         pwins=0;
     	ewins=0;
     	mapcount=1;
     	screen=MENU;
-    	start=new FButton(585,300,30,20,"start");
-    	controls=new FButton(585,400,30,20,"controls");
-    	quit=new FButton(585,500,30,20,"quit");
         //read walls and tank information from text files
 	}
 	
@@ -79,6 +84,12 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 		mousex=e.getX();
 		mousey=e.getY();	
 	}
+	public void mouseMoved(MouseEvent e){}
+	public void mouseDragged(MouseEvent e){}
+	public void mouseExited(MouseEvent e){}
+	public void mouseEntered(MouseEvent e){}
+	public void mouseReleased(MouseEvent e){}
+	public void mouseClicked(MouseEvent e){}
 	
 	public void menuFunctions(){
 		if(screen==MENU){
@@ -250,6 +261,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     public void paintComponent(Graphics g){
     	//g.drawImage(back,0,0,null);
     	if(screen==MENU){
+    		g.drawImage(menuPic,0,0,null);
     		start.drawButt(g);
     		controls.drawButt(g);
     		quit.drawButt(g);

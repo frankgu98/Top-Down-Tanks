@@ -13,7 +13,7 @@ import java.awt.geom.*;
 import java.awt.image.*;
 import java.io.*;
 public class FButton {
-	private int x,y,w,h;
+	private int x,y,w,h,textx,texty;
 	private boolean locked;
 	private String text;
     public FButton(int x,int y,int w,int h, String text) {
@@ -22,6 +22,7 @@ public class FButton {
     	this.w=w;
     	this.h=h;
     	this.text=text;
+    	textx=x+(int)w/2-text.length()*11;
     	locked=false;
     }
     public void setLock(boolean bool){
@@ -35,10 +36,10 @@ public class FButton {
     }
     public void drawButt(Graphics g){
     	g.setColor(new Color(120,120,120));
-    	g.fillRect((int)x,(int)y,(int)w,(int)h);
+    	g.fillRect(x,y,w,h);
     	g.setColor(new Color(30,30,30));
-    	Font f = new Font("D-Day Stencil", Font.BOLD, 30);
+    	Font f = new Font("Georgia", Font.BOLD, 30);
 		g.setFont(f);
-    	g.drawString(text,x,y);
+    	g.drawString(text,textx,y+32);
    	}
 }
