@@ -75,7 +75,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
         actionsenabled=false;
         pwins=0;
     	ewins=0;
-    	mapcount=2;
+    	mapcount=1;
     	screen=MENU;
         //read walls and tank information from text files
 	}
@@ -109,7 +109,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	}
 	
 	public void playingFunctions(){
-		System.out.println(actionsenabled);
+		//System.out.println(actionsenabled);
 		if(screen==GAME){
 			checkEnded();
 			playerActions();
@@ -143,15 +143,16 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 		Scanner infile=null;
 		while (infile==null){
 	    	try{
-	    		infile=new Scanner(new File("map"+(int)(mapcount*Math.random())+".txt"));
+	    		infile=new Scanner(new File("map"+(int)(mapcount*Math.random()+3)+".txt"));
 	    	}
 	    	catch(IOException ex){
 	    		System.out.println("Don't mess up the maps");
+	    		System.exit(0);
 	    	}
 	    	catch(Exception ex){
 	    		System.out.println("Something went more wrong than usual");
+	    		System.exit(0);
 	    	}
-	    	
 		}
 		p=new Tank(infile.nextLine());
 	    e=new Tank(infile.nextLine());
@@ -258,8 +259,8 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     public void drawScore(Graphics g){
 		Font f = new Font("D-Day Stencil", Font.BOLD, 30);
 		g.setFont(f);
-    	g.drawImage(p.getPic(),35,840,null);
-    	g.drawString(Integer.toString(pwins),90,870);
+    	g.drawImage(p.getPic(),85,840,null);
+    	g.drawString(Integer.toString(pwins),140,870);
     	g.drawImage(e.getPic(),1000,840,null);
     	g.drawString(Integer.toString(ewins),1055,870);
     }
