@@ -6,6 +6,18 @@ import java.awt.MouseInfo;
 import java.io.*;
 //approximate hitbox, if turned, hitbox can still stay the same
 //add powerups if time
+
+
+//does he want the linked list assignment done when i'm back?
+
+
+//if you die and hold down shoot for ~1/2 the death time, you shoot a bullet when you respawn-PLS SEND HALP
+
+
+
+
+
+
 public class TankGame extends JFrame implements ActionListener{
 	javax.swing.Timer myTimer;   
 	GamePanel game;
@@ -44,13 +56,14 @@ public class TankGame extends JFrame implements ActionListener{
 class GamePanel extends JPanel implements KeyListener,MouseMotionListener, MouseListener{
 	public static final int MENU=0;
 	public static final int GAME=1;
+	public static final int CONTROLS=2;
 	private boolean[] keys;
 	private int[] ppos,epos;//player position and enemy position
 	private int screen,mousex,mousey;
 	private boolean playing,actionsenabled;
 	private int pwins,ewins,mapcount;
-	private Image menuPic;
-	private FButton start, controls, quit;
+	private Image menuPic,controlsPic;
+	private FButton start, controls, quit, back;
 	private Tank p,e;
 	private TankGame mainFrame;
 	private ArrayList<Bullet> bullets;
@@ -69,13 +82,15 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     	start=new FButton(386,370,430,47,"START");
     	controls=new FButton(386,458,430,47,"CONTROLS");
     	quit=new FButton(387,548,430,47,"QUIT");
-    	
+    	back=new FButton(502,830,200,47,"BACK");
+    	back.setLock(true);
     	menuPic=new ImageIcon("menu.png").getImage();
+    	controlsPic=new ImageIcon("controls.png").getImage();
     	playing=false;
         actionsenabled=false;
         pwins=0;
     	ewins=0;
-    	mapcount=1;
+    	mapcount=4;
     	screen=MENU;
         //read walls and tank information from text files
 	}
@@ -98,12 +113,23 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 				start.setLock(true);
 				controls.setLock(true);
 				quit.setLock(true);
+				back.setLock(false);
 			}
 			if (controls.collide(mousex,mousey)){
-				
+				screen=CONTROLS;
+				back.setLock(false);
 			}
 			if (quit.collide(mousex,mousey)){
 				System.exit(0);
+			}
+		}
+		if(screen==GAME||screen==CONTROLS){
+			if (back.collide(mousex,mousey)){
+				screen=MENU;
+				start.setLock(false);
+				controls.setLock(false);
+				quit.setLock(false);
+				back.setLock(true);
 			}
 		}
 	}
@@ -119,7 +145,22 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	}
 	
 	public void checkEnded(){
-		if (!playing){
+		if (!playing&&(pwins>0||ewins>0)){
+			actionsenabled=false;
+			clearLevel();
+			newLevel();
+			playing=true;
+			//if i don't reenable, the bullet thing doesn't happen
+			try {
+    			Thread.sleep(1000);
+			} 
+			catch (InterruptedException e) {
+    			Thread.currentThread().interrupt();
+			}
+			actionsenabled=true;
+			
+		}
+		else if(!playing){
 			actionsenabled=false;
 			clearLevel();
 			newLevel();
@@ -129,12 +170,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	}
 	
 	public void clearLevel(){
-		try {
-    		Thread.sleep(1000);
-		} 
-		catch (InterruptedException e) {
-    		Thread.currentThread().interrupt();
-		}
+
 		bullets.clear();
 		walls.clear();
 	}
@@ -143,7 +179,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 		Scanner infile=null;
 		while (infile==null){
 	    	try{
-	    		infile=new Scanner(new File("map"+(int)(mapcount*Math.random()+3)+".txt"));
+	    		infile=new Scanner(new File("map"+(int)(mapcount*Math.random())+".txt"));
 	    	}
 	    	catch(IOException ex){
 	    		System.out.println("Don't mess up the maps");
@@ -266,7 +302,6 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     }
     
     public void paintComponent(Graphics g){
-    	//g.drawImage(back,0,0,null);
     	if(screen==MENU){
     		g.drawImage(menuPic,0,0,null);
     		start.drawButt(g);
@@ -291,7 +326,12 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 			for (Bullet bul:bullets){
 				bul.draw(g);
 			}
+			back.drawButt(g);
 			drawScore(g);
+	    }
+	    if(screen==CONTROLS){
+	    	g.drawImage(controlsPic,0,0,null);
+	    	back.drawButt(g);
 	    }
     }
 }

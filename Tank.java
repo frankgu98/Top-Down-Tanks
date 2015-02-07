@@ -18,6 +18,7 @@ import java.awt.image.*;
 import java.io.*;
 public class Tank {
 	private Image pic;
+	private Image[] explosionframes;
 	private double x,y,w,h,angle,speed,mx,my,vx,vy;
 	private int shootdelay, moving;
     public Tank(String in) {
@@ -35,6 +36,10 @@ public class Tank {
     	shootdelay=0;
     	moving=0;
     	pic=new ImageIcon(info[6]).getImage();
+    	explosionframes=new Image[9];
+    	for (int i=0;i<9;i++){
+    		explosionframes[i]=new ImageIcon("explosion/explosion00"+i+".png").getImage();
+    	}
     }
     
     public Bullet shoot(){
