@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.util.*;
 import java.awt.MouseInfo;
 import java.io.*;
+import java.applet.*;
+import javax.sound.sampled.AudioSystem;
+import java.net.URL;
+import javax.sound.sampled.*;
 //approximate hitbox, if turned, hitbox can still stay the same
 //add powerups if time
 
@@ -13,15 +17,19 @@ import java.io.*;
 
 
 public class TankGame extends JFrame implements ActionListener{
+	public static final int MENU=0;
+	public static final int GAME=1;
+	public static final int CONTROLS=2;
 	javax.swing.Timer myTimer;   
 	GamePanel game;
+	
     public TankGame() {
 		super("Tank Stuff");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(1205,928);
-		
 		myTimer = new javax.swing.Timer(10, this);	 // trigger every 10 ms
 		game = new GamePanel(this);
+		
 		add(game);
 		setResizable(false);
 		setVisible(true);
@@ -47,14 +55,15 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	public static final int MENU=0;
 	public static final int GAME=1;
 	public static final int CONTROLS=2;
+	public int screen;
 	private long pausestarttime;
 	private boolean[] keys;
-	private int[] ppos,epos;//player position and enemy position
-	private int screen,mousex,mousey;
-	private boolean playing,actionsenabled;
+	private int clickx,clicky;
+	private boolean playing,actionsenabled,muted;
 	private int pwins,ewins,mapcount;
+	AudioClip sax;
 	private Image menuPic,controlsPic;
-	private FButton start, controls, quit, back;
+	private FButton start,controls,quit,back,mute;
 	private Tank p,e;
 	private TankGame mainFrame;
 	private ArrayList<Bullet> bullets;
@@ -69,26 +78,30 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
         addKeyListener(this);
         addMouseMotionListener(this);
 		addMouseListener(this);
-
-    	start=new FButton(386,370,430,47,"START");
-    	controls=new FButton(386,458,430,47,"CONTROLS");
-    	quit=new FButton(387,548,430,47,"QUIT");
-    	back=new FButton(502,830,200,47,"BACK");
+		clickx=-1;
+		clicky=-1;
+		screen=MENU;
+    	start=new FButton(386,370,430,47,0,"START",30);
+    	controls=new FButton(386,458,430,47,0,"CONTROLS",30);
+    	quit=new FButton(387,548,430,47,0,"QUIT",30);
+    	back=new FButton(502,810,200,47,0,"BACK",30);
+    	mute=new FButton(577,868,40,30,25,"MUTE",12);
     	back.setLock(true);
+    	mute.setLock(true);
+    	sax = Applet.newAudioClip(getClass().getResource("Yakety_Sax.wav"));
     	menuPic=new ImageIcon("menu.png").getImage();
     	controlsPic=new ImageIcon("controls.png").getImage();
     	playing=false;
         actionsenabled=false;
+        muted=false;
         pwins=0;
     	ewins=0;
     	mapcount=4;
-    	screen=MENU;
-        
 	}
 	
 	public void mousePressed(MouseEvent e){
-		mousex=e.getX();
-		mousey=e.getY();	
+		clickx=e.getX();
+		clicky=e.getY();	
 	}
 	public void mouseMoved(MouseEvent e){}
 	public void mouseDragged(MouseEvent e){}
@@ -97,41 +110,78 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	public void mouseReleased(MouseEvent e){}
 	public void mouseClicked(MouseEvent e){}
 	
+	public void resetClick(){
+		clickx=-1;
+		clicky=-1;
+	}
+	
 	public void menuFunctions(){
 		if(screen==MENU){
-			if (start.collide(mousex,mousey)){
+			if (start.collide(clickx,clicky)){
 				screen=GAME;
 				start.setLock(true);
 				controls.setLock(true);
 				quit.setLock(true);
 				back.setLock(false);
+				mute.setLock(false);
 				//first initializing, needed since checkEnded is the last function that's called when playing but is the only other map loading function,
 				//so players would attempt to move before they existed
 				newLevel();
 				playing=true;
 				actionsenabled=true;
+				sax.loop();//plays music upon starting the actual playing
+				resetClick();
 			}
-			if (controls.collide(mousex,mousey)){
+			if (controls.collide(clickx,clicky)){
 				screen=CONTROLS;
+				start.setLock(true);
+				controls.setLock(true);
+				quit.setLock(true);
 				back.setLock(false);
+				resetClick();
 			}
-			if (quit.collide(mousex,mousey)){
+			if (quit.collide(clickx,clicky)){
 				System.exit(0);
 			}
 		}
-		if(screen==GAME||screen==CONTROLS){
-			if (back.collide(mousex,mousey)){
+		if(screen==GAME){
+			if (back.collide(clickx,clicky)){
+				pwins=0;
+				ewins=0;
+				screen=MENU;
+				start.setLock(false);
+				controls.setLock(false);
+				quit.setLock(false);
+				back.setLock(true);
+				mute.setLock(true);
+				sax.stop();
+				resetClick();
+			}
+			if(mute.collide(clickx,clicky)){//have mute stay the same over changing screens
+				if(muted){
+					muted=false;
+					sax.loop();
+				}
+				else{
+					muted=true;
+					sax.stop();
+				}
+				resetClick();
+			}
+		}
+		if(screen==CONTROLS){
+			if (back.collide(clickx,clicky)){
 				screen=MENU;
 				start.setLock(false);
 				controls.setLock(false);
 				quit.setLock(false);
 				back.setLock(true);
 			}
+			resetClick();
 		}
 	}
 	
 	public void playingFunctions(){
-		//System.out.println(actionsenabled);
 		if(screen==GAME){
 			playerActions();
 			bulPhysics();
@@ -146,9 +196,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 			actionsenabled=false;
 			p.setMoving(0);
 			e.setMoving(0);
-			if(pausestarttime+8000<=System.currentTimeMillis()){
-				//p.setDying(false);
-				//e.setDying(false);
+			if(pausestarttime+2000<=System.currentTimeMillis()){
 				walls.clear();
 				newLevel();
 				actionsenabled=true;
@@ -171,7 +219,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     		System.out.println("Something went more wrong than usual");
     		System.exit(0);
     	}
-		
+		walls.clear();
 		p=new Tank(infile.nextLine());
 	    e=new Tank(infile.nextLine());
 	    int n=Integer.parseInt(infile.nextLine());
@@ -193,9 +241,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	    		ewins++;
 	    		pausestarttime=System.currentTimeMillis();
 	    		bullets.clear();
-	    		
 				playing=false;
-				
 				break;
 			}
 			if (e.bulCollide(bul)){
@@ -295,12 +341,8 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     
     public void paintComponent(Graphics g){
     	if(screen==MENU){
-    		g.drawImage(menuPic,0,0,null);
-    		start.drawButt(g);
-    		controls.drawButt(g);
-    		quit.drawButt(g);
-    	}
-    	
+    		g.drawImage(menuPic,0,0,null);	
+    	}	
     	if(screen==GAME){
 	    	g.setColor(new Color(230,230,230)); //230
 	    	g.fillRect(0,0,getWidth(),getHeight());
@@ -317,12 +359,15 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 			}
 			p.drawTank(g);
 			e.drawTank(g);
-			back.drawButt(g);
 			drawScore(g);
 	    }
 	    if(screen==CONTROLS){
-	    	g.drawImage(controlsPic,0,0,null);
-	    	back.drawButt(g);
+	    	g.drawImage(controlsPic,0,0,null);	
 	    }
+	    start.drawButt(g);
+    	controls.drawButt(g);
+    	quit.drawButt(g);
+    	back.drawButt(g);
+    	mute.drawButt(g);
     }
 }
