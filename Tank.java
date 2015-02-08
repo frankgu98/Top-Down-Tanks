@@ -18,9 +18,10 @@ import java.awt.image.*;
 import java.io.*;
 public class Tank {
 	private Image pic;
-	private Image[] explosionframes;
-	private double x,y,w,h,angle,speed,mx,my,vx,vy;
-	private int shootdelay, moving;
+	private Image[] deathframes;
+	private double x,y,w,h,angle,speed,mx,my,vx,vy,deathframe;
+	private int shootdelay,moving;
+	private boolean drawingdeath;
     public Tank(String in) {
     	String[] info=in.split(",");
     	x=Double.parseDouble(info[0]);
@@ -36,12 +37,17 @@ public class Tank {
     	shootdelay=0;
     	moving=0;
     	pic=new ImageIcon(info[6]).getImage();
-    	explosionframes=new Image[9];
-    	for (int i=0;i<9;i++){
-    		explosionframes[i]=new ImageIcon("explosion/explosion00"+i+".png").getImage();
+    	deathframes=new Image[9];
+    	for (int i=1;i<10;i++){
+    		deathframes[i-1]=new ImageIcon("explosion/explosion00"+i+".png").getImage();
     	}
+    	drawingdeath=false;
+    	deathframe=0;
     }
     
+    public void startDeath(){
+    	drawingdeath=true;
+    }
     public Bullet shoot(){
 	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle,9);//-3 on mx and my needed to center bullet
 	    shootdelay=30;//20
@@ -87,14 +93,23 @@ public class Tank {
    
    	//what is even going on here
    	public void drawTank(Graphics g){
-   		Graphics2D g2D = (Graphics2D)g;
-		AffineTransform saveXform = g2D.getTransform();
-		AffineTransform at = new AffineTransform();
-		at.rotate(Math.toRadians(angle),mx,my);
-		g2D.transform(at);
-		g2D.drawImage(pic,(int)x,(int)y,null);
-		g2D.setTransform(saveXform);
-   		//g.fillRect((int)x,(int)y,(int)w,(int)h);
+   		if (drawingdeath){
+   			g.drawImage(deathframes[(int)deathframe],(int)x,(int)y,null);
+   			deathframe+=.1;
+   			if (deathframe>8.9){
+   				drawingdeath=false;
+   			}
+   		}
+   		else{
+	   		Graphics2D g2D = (Graphics2D)g;
+			AffineTransform saveXform = g2D.getTransform();
+			AffineTransform at = new AffineTransform();
+			at.rotate(Math.toRadians(angle),mx,my);
+			g2D.transform(at);
+			g2D.drawImage(pic,(int)x,(int)y,null);
+			g2D.setTransform(saveXform);
+	   		//g.fillRect((int)x,(int)y,(int)w,(int)h);
+   		}
    	}
    	
    	public Image getPic(){

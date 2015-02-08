@@ -11,12 +11,6 @@ import java.io.*;
 //does he want the linked list assignment done when i'm back?
 
 
-//if you die and hold down shoot for ~1/2 the death time, you shoot a bullet when you respawn-PLS SEND HALP
-
-
-
-
-
 
 public class TankGame extends JFrame implements ActionListener{
 	javax.swing.Timer myTimer;   
@@ -36,10 +30,6 @@ public class TankGame extends JFrame implements ActionListener{
 	public void start(){
 		myTimer.start();
 	}
-	
-	public void pause(){
-		
-	}
 
 	public void actionPerformed(ActionEvent evt){
 		game.menuFunctions();
@@ -57,6 +47,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	public static final int MENU=0;
 	public static final int GAME=1;
 	public static final int CONTROLS=2;
+	private long pausestarttime;
 	private boolean[] keys;
 	private int[] ppos,epos;//player position and enemy position
 	private int screen,mousex,mousey;
@@ -92,7 +83,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     	ewins=0;
     	mapcount=4;
     	screen=MENU;
-        //read walls and tank information from text files
+        
 	}
 	
 	public void mousePressed(MouseEvent e){
@@ -114,6 +105,11 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 				controls.setLock(true);
 				quit.setLock(true);
 				back.setLock(false);
+				//first initializing, needed since checkEnded is the last function that's called when playing but is the only other map loading function,
+				//so players would attempt to move before they existed
+				newLevel();
+				playing=true;
+				actionsenabled=true;
 			}
 			if (controls.collide(mousex,mousey)){
 				screen=CONTROLS;
@@ -137,36 +133,30 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	public void playingFunctions(){
 		//System.out.println(actionsenabled);
 		if(screen==GAME){
-			checkEnded();
 			playerActions();
 			bulPhysics();
 			tankPhysics();
+			checkEnded();//checkEnded comes last since a player's last input used to be able to slip though the map switch
+			//ex. if a player held shoot while in the transition period, a bullet would come out upon entering the new map
 		}
 	}
 	
 	public void checkEnded(){
-		if (!playing&&(pwins>0||ewins>0)){
+		if (!playing&&pausestarttime+1000<=System.currentTimeMillis()){
 			actionsenabled=false;
 			clearLevel();
 			newLevel();
-			playing=true;
-			//if i don't reenable, the bullet thing doesn't happen
-			try {
-    			Thread.sleep(1000);
-			} 
-			catch (InterruptedException e) {
-    			Thread.currentThread().interrupt();
-			}
 			actionsenabled=true;
-			
+			playing=true;
 		}
+		/*
 		else if(!playing){
 			actionsenabled=false;
 			clearLevel();
 			newLevel();
 			playing=true;
 			actionsenabled=true;
-		}
+		}*/
 	}
 	
 	public void clearLevel(){
@@ -176,6 +166,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	}
 		
 	public void newLevel(){
+		//read walls and tank information from text files
 		Scanner infile=null;
 		while (infile==null){
 	    	try{
@@ -207,12 +198,18 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     	for (int i=bullets.size()-1; i> -1; i--){//needed to unmess up arraylist
     		Bullet bul=bullets.get(i);
 	    	if (p.bulCollide(bul)){
+	    		p.startDeath();
 	    		ewins++;
+	    		pausestarttime=System.currentTimeMillis();
 				playing=false;
+				break;
 			}
 			if (e.bulCollide(bul)){
+				e.startDeath();
 				pwins++;
+				pausestarttime=System.currentTimeMillis();
 				playing=false;
+				break;
 			}
 			for (Wall w:walls){
 				if (w.collide(bul)){
@@ -313,10 +310,8 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	    	g.setColor(new Color(230,230,230)); 
 	    	g.fillRect(0,0,getWidth(),getHeight());
 			g.setColor(Color.blue); 
-			if (playing){
-				p.drawTank(g);
-				e.drawTank(g);
-			} 
+			p.drawTank(g);
+			e.drawTank(g);
 	
 			g.setColor(new Color(77,77,77));
 			for (Wall w:walls){
