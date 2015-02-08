@@ -144,9 +144,11 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	public void checkEnded(){
 		if (!playing){
 			actionsenabled=false;
-			if(pausestarttime+2000<=System.currentTimeMillis()){
-				p.setDying(false);
-				e.setDying(false);
+			p.setMoving(0);
+			e.setMoving(0);
+			if(pausestarttime+8000<=System.currentTimeMillis()){
+				//p.setDying(false);
+				//e.setDying(false);
 				walls.clear();
 				newLevel();
 				actionsenabled=true;
@@ -158,19 +160,18 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	public void newLevel(){
 		//read walls and tank information from text files
 		Scanner infile=null;
-		while (infile==null){
-	    	try{
-	    		infile=new Scanner(new File("map"+(int)(mapcount*Math.random())+".txt"));
-	    	}
-	    	catch(IOException ex){
-	    		System.out.println("Don't mess up the maps");
-	    		System.exit(0);
-	    	}
-	    	catch(Exception ex){
-	    		System.out.println("Something went more wrong than usual");
-	    		System.exit(0);
-	    	}
-		}
+    	try{
+    		infile=new Scanner(new File("maps/map"+(int)(mapcount*Math.random())+".txt"));
+    	}
+    	catch(IOException ex){
+    		System.out.println("Don't mess up the maps");
+    		System.exit(0);
+    	}
+    	catch(Exception ex){
+    		System.out.println("Something went more wrong than usual");
+    		System.exit(0);
+    	}
+		
 		p=new Tank(infile.nextLine());
 	    e=new Tank(infile.nextLine());
 	    int n=Integer.parseInt(infile.nextLine());
@@ -192,8 +193,9 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	    		ewins++;
 	    		pausestarttime=System.currentTimeMillis();
 	    		bullets.clear();
+	    		
 				playing=false;
-			
+				
 				break;
 			}
 			if (e.bulCollide(bul)){
@@ -300,11 +302,10 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     	}
     	
     	if(screen==GAME){
-	    	g.setColor(new Color(230,230,230)); 
+	    	g.setColor(new Color(230,230,230)); //230
 	    	g.fillRect(0,0,getWidth(),getHeight());
 			g.setColor(Color.blue); 
-			p.drawTank(g);
-			e.drawTank(g);
+			
 	
 			g.setColor(new Color(77,77,77));
 			for (Wall w:walls){
@@ -314,6 +315,8 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 			for (Bullet bul:bullets){
 				bul.draw(g);
 			}
+			p.drawTank(g);
+			e.drawTank(g);
 			back.drawButt(g);
 			drawScore(g);
 	    }

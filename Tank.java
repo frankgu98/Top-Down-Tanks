@@ -10,6 +10,8 @@
 Concatenates this transform with a transform that rotates coordinates around an anchor point.*/
 
 //moving and speed are pretty similar
+
+//only drawing death after frames, first death anim had 9 frames, suspicious
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
@@ -37,9 +39,10 @@ public class Tank {
     	shootdelay=0;
     	moving=0;
     	pic=new ImageIcon(info[6]).getImage();
-    	deathframes=new Image[9];
-    	for (int i=1;i<10;i++){
-    		deathframes[i-1]=new ImageIcon("explosion/explosion00"+i+".png").getImage();
+    	deathframes=new Image[15];
+    	for (int i=0;i<15;i++){
+    		deathframes[i]=new ImageIcon("explosion/explosion"+i+".png").getImage();
+    		
     	}
     	dying=false;
     	deathind=0;//new tank created every new map, no need to reset deathind
@@ -48,7 +51,6 @@ public class Tank {
     public void setDying(Boolean bool){
     	dying=bool;
     }
-    
 
     public Bullet shoot(){
 	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle,9);//-3 on mx and my needed to center bullet
@@ -95,15 +97,16 @@ public class Tank {
    
    	//what is even going on here
    	public void drawTank(Graphics g){
+   		
    		if (dying){
-   			if(deathind<9){
+   			if(deathind<15){
 	   			Image deathframe=deathframes[(int)deathind];
 	   			int fw=deathframe.getWidth(null);
 	   			int fh=deathframe.getHeight(null);
 	   			double offx=(fw-w)/2;
 	   			double offy=(fh-h)/2;
 	   			g.drawImage(deathframe,(int)(x-offx),(int)(y-offy),null);
-	   			deathind+=.1;
+	   			deathind+=.2;
    			}
    		}
 
