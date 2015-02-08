@@ -5,8 +5,6 @@ import java.util.*;
 import java.awt.MouseInfo;
 import java.io.*;
 import java.applet.*;
-import javax.sound.sampled.AudioSystem;
-import java.net.URL;
 import javax.sound.sampled.*;
 //approximate hitbox, if turned, hitbox can still stay the same
 //add powerups if time
@@ -260,7 +258,7 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 				}
 			}
 			bul.move();
-			if (bul.getTravelled()>3999){
+			if (bul.getTravelled()>4999){
     			bullets.remove(i);
     		}
     	}

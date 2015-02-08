@@ -53,7 +53,7 @@ public class Tank {
     }
 
     public Bullet shoot(){
-	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle,9);//-3 on mx and my needed to center bullet
+	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle+Math.random()*6-3,6);//-3 on mx and my needed to center bullet
 	    shootdelay=30;//20
     	return b;
     }

@@ -5,10 +5,10 @@
  * @author 
  * @version 1.00 2015/1/14
  */
- //int only when drawing
+
 import java.util.*;
 import java.awt.*;
-//bullets bounce
+
 public class Bullet {
 	private double x,y,w,h,vx,vy,speed,travelled;
 
@@ -22,7 +22,6 @@ public class Bullet {
     	vy=speed*Math.sin(Math.toRadians(ang));
     	travelled=0;
     }
-    
     
     public void move(){
     	x+=vx;
