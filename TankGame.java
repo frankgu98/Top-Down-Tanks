@@ -142,27 +142,17 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 	}
 	
 	public void checkEnded(){
-		if (!playing&&pausestarttime+1000<=System.currentTimeMillis()){
+		if (!playing){
 			actionsenabled=false;
-			clearLevel();
-			newLevel();
-			actionsenabled=true;
-			playing=true;
+			if(pausestarttime+2000<=System.currentTimeMillis()){
+				p.setDying(false);
+				e.setDying(false);
+				walls.clear();
+				newLevel();
+				actionsenabled=true;
+				playing=true;
+			}
 		}
-		/*
-		else if(!playing){
-			actionsenabled=false;
-			clearLevel();
-			newLevel();
-			playing=true;
-			actionsenabled=true;
-		}*/
-	}
-	
-	public void clearLevel(){
-
-		bullets.clear();
-		walls.clear();
 	}
 		
 	public void newLevel(){
@@ -198,16 +188,19 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     	for (int i=bullets.size()-1; i> -1; i--){//needed to unmess up arraylist
     		Bullet bul=bullets.get(i);
 	    	if (p.bulCollide(bul)){
-	    		p.startDeath();
+	    		p.setDying(true);
 	    		ewins++;
 	    		pausestarttime=System.currentTimeMillis();
+	    		bullets.clear();
 				playing=false;
+			
 				break;
 			}
 			if (e.bulCollide(bul)){
-				e.startDeath();
+				e.setDying(true);
 				pwins++;
 				pausestarttime=System.currentTimeMillis();
+				bullets.clear();
 				playing=false;
 				break;
 			}

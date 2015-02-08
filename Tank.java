@@ -19,9 +19,9 @@ import java.io.*;
 public class Tank {
 	private Image pic;
 	private Image[] deathframes;
-	private double x,y,w,h,angle,speed,mx,my,vx,vy,deathframe;
+	private double x,y,w,h,angle,speed,mx,my,vx,vy,deathind;
 	private int shootdelay,moving;
-	private boolean drawingdeath;
+	private boolean dying;
     public Tank(String in) {
     	String[] info=in.split(",");
     	x=Double.parseDouble(info[0]);
@@ -41,13 +41,15 @@ public class Tank {
     	for (int i=1;i<10;i++){
     		deathframes[i-1]=new ImageIcon("explosion/explosion00"+i+".png").getImage();
     	}
-    	drawingdeath=false;
-    	deathframe=0;
+    	dying=false;
+    	deathind=0;//new tank created every new map, no need to reset deathind
     }
     
-    public void startDeath(){
-    	drawingdeath=true;
+    public void setDying(Boolean bool){
+    	dying=bool;
     }
+    
+
     public Bullet shoot(){
 	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle,9);//-3 on mx and my needed to center bullet
 	    shootdelay=30;//20
@@ -93,13 +95,18 @@ public class Tank {
    
    	//what is even going on here
    	public void drawTank(Graphics g){
-   		if (drawingdeath){
-   			g.drawImage(deathframes[(int)deathframe],(int)x,(int)y,null);
-   			deathframe+=.1;
-   			if (deathframe>8.9){
-   				drawingdeath=false;
+   		if (dying){
+   			if(deathind<9){
+	   			Image deathframe=deathframes[(int)deathind];
+	   			int fw=deathframe.getWidth(null);
+	   			int fh=deathframe.getHeight(null);
+	   			double offx=(fw-w)/2;
+	   			double offy=(fh-h)/2;
+	   			g.drawImage(deathframe,(int)(x-offx),(int)(y-offy),null);
+	   			deathind+=.1;
    			}
    		}
+
    		else{
 	   		Graphics2D g2D = (Graphics2D)g;
 			AffineTransform saveXform = g2D.getTransform();
