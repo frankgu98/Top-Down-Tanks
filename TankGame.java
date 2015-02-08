@@ -1,3 +1,12 @@
+/**
+ * @(#)TankGame.java
+ *
+ *
+ * @Frank Gu
+ *	 
+ * @version 1.00 2015/1/14
+ */
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -11,6 +20,7 @@ import javax.sound.sampled.*;
 
 
 //does he want the linked list assignment done when i'm back?
+//also, can i get a note for linked list?
 
 
 
