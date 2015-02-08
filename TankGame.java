@@ -42,6 +42,7 @@ public class TankGame extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent evt){
 		game.menuFunctions();
 		game.playingFunctions();
+		game.controlsFunctions();
 		game.repaint();
 	}
 
@@ -89,14 +90,14 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     	back.setLock(true);
     	mute.setLock(true);
     	sax = Applet.newAudioClip(getClass().getResource("Yakety_Sax.wav"));
-    	menuPic=new ImageIcon("menu.png").getImage();
-    	controlsPic=new ImageIcon("controls.png").getImage();
+    	menuPic=new ImageIcon("images/menu.png").getImage();
+    	controlsPic=new ImageIcon("images/controls.png").getImage();
     	playing=false;
         actionsenabled=false;
         muted=false;
         pwins=0;
     	ewins=0;
-    	mapcount=4;
+    	mapcount=5;
 	}
 	
 	public void mousePressed(MouseEvent e){
@@ -144,6 +145,22 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 				System.exit(0);
 			}
 		}
+	}
+	
+	public void controlsFunctions(){
+		if(screen==CONTROLS){
+			if (back.collide(clickx,clicky)){
+				screen=MENU;
+				start.setLock(false);
+				controls.setLock(false);
+				quit.setLock(false);
+				back.setLock(true);
+			}
+			resetClick();
+		}
+	}
+	
+	public void playingFunctions(){
 		if(screen==GAME){
 			if (back.collide(clickx,clicky)){
 				pwins=0;
@@ -168,21 +185,6 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 				}
 				resetClick();
 			}
-		}
-		if(screen==CONTROLS){
-			if (back.collide(clickx,clicky)){
-				screen=MENU;
-				start.setLock(false);
-				controls.setLock(false);
-				quit.setLock(false);
-				back.setLock(true);
-			}
-			resetClick();
-		}
-	}
-	
-	public void playingFunctions(){
-		if(screen==GAME){
 			playerActions();
 			bulPhysics();
 			tankPhysics();

@@ -38,10 +38,10 @@ public class Tank {
     	my=y+h/2;
     	shootdelay=0;
     	moving=0;
-    	pic=new ImageIcon(info[6]).getImage();
+    	pic=new ImageIcon("images/"+info[6]).getImage();
     	deathframes=new Image[15];
     	for (int i=0;i<15;i++){
-    		deathframes[i]=new ImageIcon("explosion/explosion"+i+".png").getImage();
+    		deathframes[i]=new ImageIcon("images/explosion/explosion"+i+".png").getImage();
     		
     	}
     	dying=false;
