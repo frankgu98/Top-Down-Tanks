@@ -17,6 +17,7 @@ public class FButton {
 	private int x,y,w,h,textx,texty,fontsize;//x coord,y coord,width,height,x coord of start of text,y coord of start of text,font size
 	private boolean locked;//if the button is locked
 	private String text;//text associated with the button
+	//contructor takes in information normally
     public FButton(int x,int y,int w,int h,int xshift,String text,int fontsize) {
     	this.x=x;
     	this.y=y;

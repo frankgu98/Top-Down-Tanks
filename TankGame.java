@@ -248,8 +248,8 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     		System.out.println("Something went more wrong than usual");
     		System.exit(0);
     	}
-		
 	}
+	
     public void addNotify() {
         super.addNotify();
         requestFocus();
