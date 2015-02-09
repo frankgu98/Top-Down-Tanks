@@ -1,8 +1,9 @@
 /**
  * @(#)Wall.java
  *
- *
- * @author 
+ * @Frank Gu
+ *	Wall class made to obstruct movement and bounce bullets in TankGame
+ *	It can draw itself, detect collision with Bullets and Tanks, and bounce bullets
  * @version 1.00 2015/1/20
  */
 import java.util.*;
@@ -65,7 +66,6 @@ public class Wall {
    			bx=b.getX();
    			by=b.getY();
    		}
-   		
    		b.switchVx();
    		b.switchVy();
    	}

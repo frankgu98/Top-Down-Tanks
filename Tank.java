@@ -1,17 +1,13 @@
 /**
  * @(#)Tank.java
  *
- *
- * @author 
+ * @Frank Gu
+ *	Tank class made to be controlled by players in TankGame
  * @version 1.00 2015/1/13
  */
- /*
-  *rotate(double theta, double anchorx, double anchory)
-Concatenates this transform with a transform that rotates coordinates around an anchor point.*/
 
 //moving and speed are pretty similar
 
-//only drawing death after frames, first death anim had 9 frames, suspicious
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
@@ -41,15 +37,10 @@ public class Tank {
     	pic=new ImageIcon("images/"+info[6]).getImage();
     	deathframes=new Image[15];
     	for (int i=0;i<15;i++){
-    		deathframes[i]=new ImageIcon("images/explosion/explosion"+i+".png").getImage();
-    		
+    		deathframes[i]=new ImageIcon("images/explosion/explosion"+i+".png").getImage();	
     	}
     	dying=false;
     	deathind=0;//new tank created every new map, no need to reset deathind
-    }
-    
-    public void setDying(Boolean bool){
-    	dying=bool;
     }
 
     public Bullet shoot(){
@@ -61,10 +52,7 @@ public class Tank {
     public void delayer(){
     	shootdelay=Math.max(shootdelay-1,0);
     }
-    
-    public int getDelay(){
-    	return shootdelay;
-    }
+
     public void turn(double amount){
     	angle=(angle+amount)%360;
     	vx=speed*Math.cos(Math.toRadians(angle));
@@ -86,7 +74,9 @@ public class Tank {
 	public void switchMoving(){
 		moving*=-1;
 	}
-	//a tank technically "moves" every tick but since it's not in the moving state, it doesn't actually move
+	
+	//moves the tank
+	//a tank technically "moves" every tick but since it's not always in the moving state, it doesn't always move
 	//it's in the moving state if pressing the up or down arrow
     public void move(){
     	x+=vx*moving;
@@ -95,9 +85,7 @@ public class Tank {
     	my+=vy*moving;
     }
    
-   	//what is even going on here
    	public void drawTank(Graphics g){
-   		
    		if (dying){
    			if(deathind<15){
 	   			Image deathframe=deathframes[(int)deathind];
@@ -109,7 +97,6 @@ public class Tank {
 	   			deathind+=.2;
    			}
    		}
-
    		else{
 	   		Graphics2D g2D = (Graphics2D)g;
 			AffineTransform saveXform = g2D.getTransform();
@@ -118,10 +105,15 @@ public class Tank {
 			g2D.transform(at);
 			g2D.drawImage(pic,(int)x,(int)y,null);
 			g2D.setTransform(saveXform);
-	   		//g.fillRect((int)x,(int)y,(int)w,(int)h);
    		}
    	}
-   	
+   	    
+    public void setDying(Boolean bool){
+    	dying=bool;
+    }
+   	public int getDelay(){
+    	return shootdelay;
+    }
    	public Image getPic(){
    		return pic;
    	}

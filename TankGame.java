@@ -1,9 +1,8 @@
 /**
  * @(#)TankGame.java
  *
- *
  * @Frank Gu
- *	 
+ *	
  * @version 1.00 2015/1/14
  */
 
@@ -11,7 +10,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-import java.awt.MouseInfo;
 import java.io.*;
 import java.applet.*;
 import javax.sound.sampled.*;
@@ -42,7 +40,7 @@ public class TankGame extends JFrame implements ActionListener{
 		setResizable(false);
 		setVisible(true);
     }
-	
+
 	public void start(){
 		myTimer.start();
 	}
@@ -94,12 +92,22 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
     	controls=new FButton(386,458,430,47,0,"CONTROLS",30);
     	quit=new FButton(387,548,430,47,0,"QUIT",30);
     	back=new FButton(502,810,200,47,0,"BACK",30);
-    	mute=new FButton(577,868,40,30,25,"MUTE",12);
+    	mute=new FButton(575,868,48,30,25,"MUTE",12);
     	back.setLock(true);
     	mute.setLock(true);
-    	sax = Applet.newAudioClip(getClass().getResource("Yakety_Sax.wav"));
-    	menuPic=new ImageIcon("images/menu.png").getImage();
-    	controlsPic=new ImageIcon("images/controls.png").getImage();
+    	try{
+	    	sax = Applet.newAudioClip(getClass().getResource("Yakety_Sax.wav"));
+	    	menuPic=new ImageIcon("images/menu.png").getImage();
+	    	controlsPic=new ImageIcon("images/controls.png").getImage();
+    	}
+    	catch(NullPointerException ex){
+    		System.out.println("Don't touch the resources");
+    		System.exit(0);
+    	}
+    	catch(Exception ex){
+    		System.out.println("Something went more wrong than usual");
+    		System.exit(0);
+    	}
     	playing=false;
         actionsenabled=false;
         muted=false;
@@ -217,25 +225,30 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 		
 	public void newLevel(){
 		//read walls and tank information from text files
+		walls.clear();
 		Scanner infile=null;
     	try{
-    		infile=new Scanner(new File("maps/map"+(int)(mapcount*Math.random())+".txt"));
+    		infile=new Scanner(new File("maps/map"+(int)(mapcount*Math.random())+".txt"));	
+			p=new Tank(infile.nextLine());
+	    	e=new Tank(infile.nextLine());
+	    	int n=Integer.parseInt(infile.nextLine());
+	    	for (int i=0;i<n;i++){
+	    		walls.add(new Wall(infile.nextLine()));
+			}
+    	}
+    	catch(NullPointerException ex){
+    		System.out.println("Don't touch the resources");
+    		System.exit(0);
     	}
     	catch(IOException ex){
-    		System.out.println("Don't mess up the maps");
+    		System.out.println("Don't mess with the maps");
     		System.exit(0);
     	}
     	catch(Exception ex){
     		System.out.println("Something went more wrong than usual");
     		System.exit(0);
     	}
-		walls.clear();
-		p=new Tank(infile.nextLine());
-	    e=new Tank(infile.nextLine());
-	    int n=Integer.parseInt(infile.nextLine());
-	    for (int i=0;i<n;i++){
-	    	walls.add(new Wall(infile.nextLine()));
-		}
+		
 	}
     public void addNotify() {
         super.addNotify();

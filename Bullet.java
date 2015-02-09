@@ -1,10 +1,9 @@
 /**
  * @(#)Bullet.java
  *
- *
  * @Frank Gu
- *	Bullet class made to be used in TankGame
- *	can move, draw itself, and stores data on its position
+ *	Bullet class made to be shot by a Tank in TankGame
+ *	It can move, draw itself, and stores data on its position
  * @version 1.00 2015/1/14
  */
 
@@ -32,7 +31,8 @@ public class Bullet {
     	travelled+=speed;
     }
     
-    //takes in a Graphics argument to simplify drawing the bullet
+    //takes in a Graphics argument to draw the bullet
+    //simplifies drawing the bullet
    	public void draw(Graphics g){
    		g.fillOval((int)x,(int)y,(int)w,(int)h);
    	}
@@ -53,6 +53,7 @@ public class Bullet {
    	public double getTravelled(){
    		return travelled;
    	}
+   	//needed for bouncing
    	public void switchVx(){
    		vx*=-1;
    	}
