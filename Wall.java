@@ -8,7 +8,6 @@
  */
 import java.util.*;
 import java.awt.*;
-
 public class Wall {
 	private double x,y,w,h;//x coord,y coord,width,height
 	//contructor takes in information from a text file

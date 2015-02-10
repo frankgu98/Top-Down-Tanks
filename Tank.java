@@ -46,7 +46,7 @@ public class Tank {
     	moving=0;
     }
 
-	//returns a Bulletbased on the Tank's position
+	//returns a Bullet based on the Tank's position
     public Bullet shoot(){
     	//Bullet is generaed outside the Tank to prevent collision with the Tank that shot it,small spray created by Math.random() which can be up to 
     	//3 degrees in either direction,-3 on mx and my needed to center Bullet
@@ -75,51 +75,59 @@ public class Tank {
     	double bh=b.getH();
     	return x+w>=bx&&x<=bx+bw&&y+h>=by&&y<=by+bh;
 	}
-
-	//moving is direction, 1==forward 0==not moving -1==reverse
-	public void setMoving(int val){
-		moving=val;
-	}
-	public void switchMoving(){
-		moving*=-1;
-	}
 	
-	//moves the tank
-	//a tank technically "moves" every tick but since it's not always in the moving state, it doesn't always move
-	//a Tank is in the moving state
+	//moves the Tank
+	//a Tank technically "moves" every tick but since it's not always in the moving state, it doesn't always move
+	//a Tank is in the moving state if the associated keys are pressed in the GamePanel
     public void move(){
     	x+=vx*moving;
     	y+=vy*moving;
     	mx+=vx*moving;
     	my+=vy*moving;
     }
-   
+   	
+   	//takes in a Graphics to draw the Tank
    	public void drawTank(Graphics g){
+   		//if the Tank is dying
    		if (dying){
+   			//and if it's not done drawing its death, the Tank will cycle through the frames of its death every time the screen is updated
    			if(deathind<15){
 	   			Image deathframe=deathframes[(int)deathind];
 	   			int fw=deathframe.getWidth(null);
 	   			int fh=deathframe.getHeight(null);
+	   			//offx and offy are the offsets for the pictures and are used to centre the explosion to where the Tank died
 	   			double offx=(fw-w)/2;
 	   			double offy=(fh-h)/2;
 	   			g.drawImage(deathframe,(int)(x-offx),(int)(y-offy),null);
-	   			deathind+=.2;
+	   			deathind+=.2;//doesn't go 1 frame of death per sscreen update, each frame is on the screen for 5 updates so it looks less fast
    			}
+   			//if it's done drawing its death, but still dying, nothing is drawn (in the game, this is during the pause between map shifts as players trash talk eachother or something)
    		}
+   		//if the Tank isn't dying, it's drawn normally
    		else{
+   			//rotates the Tank's picture
 	   		Graphics2D g2D = (Graphics2D)g;
 			AffineTransform saveXform = g2D.getTransform();
 			AffineTransform at = new AffineTransform();
 			at.rotate(Math.toRadians(angle),mx,my);
 			g2D.transform(at);
+			
 			g2D.drawImage(pic,(int)x,(int)y,null);
 			g2D.setTransform(saveXform);
    		}
    	}
-   	    
+   	
+   	//getting and setting values
     public void setDying(Boolean bool){
     	dying=bool;
     }
+    //moving is direction, 1==forward 0==not moving -1==reverse
+	public void setMoving(int val){
+		moving=val;
+	}
+	public void switchMoving(){
+		moving*=-1;
+	}
    	public int getDelay(){
     	return shootdelay;
     }

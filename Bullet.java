@@ -9,7 +9,6 @@
 
 import java.util.*;
 import java.awt.*;
-
 public class Bullet {
 	//x coord,y coord,width,height,velocity in x,velocity in y,speed,how far it travelled
 	private double x,y,w,h,vx,vy,speed,travelled;
