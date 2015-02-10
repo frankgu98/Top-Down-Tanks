@@ -260,10 +260,13 @@ class GamePanel extends JPanel implements KeyListener,MouseListener{
         requestFocus();
         mainFrame.start();
     }
-   
+   	
+   	//goes through all the Bullets and decides their behaviour
     public void bulPhysics(){
-    	for (int i=bullets.size()-1; i> -1; i--){//needed to unmess up arraylist
+    	//has to go through backwards to make removing bullets possible
+    	for (int i=bullets.size()-1; i> -1; i--){
     		Bullet bul=bullets.get(i);
+    		//if either player collided with a Bullet, the score is changed, a player starts dying, and they are no longer playing
 	    	if (p.bulCollide(bul)){
 	    		p.setDying(true);
 	    		ewins++;
@@ -280,11 +283,13 @@ class GamePanel extends JPanel implements KeyListener,MouseListener{
 				playing=false;
 				break;
 			}
+			//if a Bullet hits a Wall, the bullet bounces off
 			for (Wall w:walls){
 				if (w.collide(bul)){
 					w.bounceOff(bul);
 				}
 			}
+			//moves the Bullet and checks if it moved too far (and removes the Bullet if it did)
 			bul.move();
 			if (bul.getTravelled()>4999){
     			bullets.remove(i);
@@ -292,7 +297,9 @@ class GamePanel extends JPanel implements KeyListener,MouseListener{
     	}
     }
     
+    //does all the physics and limits what Tanks can actually do
     public void tankPhysics(){
+    	//delayer reduces the delay on when a Tank can shoot again
     	p.delayer();
 		e.delayer();
     	p.move();
@@ -303,11 +310,11 @@ class GamePanel extends JPanel implements KeyListener,MouseListener{
 		}
     }
 	
+	//takes in player input and controls the Tanks based on that
 	public void playerActions(){
-		
+		//only allows the players to act if they're playing
 		if(playing){
-			
-			//has it so the tank only actually "moves" when pressing the up or down keys
+			//has it so the Tank only actually "moves" when pressing the up or down keys even though it's technically always moving (though if setMoving is 0, the Tank is moving at 0units/s)
 			if(keys[KeyEvent.VK_W]){
 				p.setMoving(1);
 			}
@@ -348,16 +355,17 @@ class GamePanel extends JPanel implements KeyListener,MouseListener{
 		}
 	}
 	
+	//gets which keys are and aren't pressed
     public void keyTyped(KeyEvent e) {}
 
     public void keyPressed(KeyEvent e) {
         keys[e.getKeyCode()] = true;
     }
-    
     public void keyReleased(KeyEvent e) {
         keys[e.getKeyCode()] = false;
     }
     
+    //draws the scores of the 2 Tanks
     public void drawScore(Graphics g){
 		Font f = new Font("D-Day Stencil", Font.BOLD, 30);
 		g.setFont(f);
@@ -367,19 +375,21 @@ class GamePanel extends JPanel implements KeyListener,MouseListener{
     	g.drawString(Integer.toString(ewins),1055,870);
     }
     
+    //draws what the user sees based on what screen they're on
     public void paintComponent(Graphics g){
     	if(screen==MENU){
     		g.drawImage(menuPic,0,0,null);	
     	}	
     	if(screen==GAME){
+    		//fills the background with light grey
 	    	g.setColor(new Color(230,230,230));
 	    	g.fillRect(0,0,getWidth(),getHeight());
-			g.setColor(Color.blue); 
-	
+	    	//draws the Walls dark grey
 			g.setColor(new Color(77,77,77));
 			for (Wall w:walls){
 				w.drawRect(g);
 			}
+			//draws the Bullets black
 			g.setColor(Color.black);  
 			for (Bullet bul:bullets){
 				bul.draw(g);
@@ -391,10 +401,11 @@ class GamePanel extends JPanel implements KeyListener,MouseListener{
 	    if(screen==CONTROLS){
 	    	g.drawImage(controlsPic,0,0,null);	
 	    }
-	    start.drawButt(g);
-    	controls.drawButt(g);
-    	quit.drawButt(g);
-    	back.drawButt(g);
-    	mute.drawButt(g);
+	    //draws all the FButtons
+	    start.drawBut(g);
+    	controls.drawBut(g);
+    	quit.drawBut(g);
+    	back.drawBut(g);
+    	mute.drawBut(g);
     }
 }

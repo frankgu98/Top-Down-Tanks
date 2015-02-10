@@ -46,7 +46,7 @@ public class FButton {
     }
     
     //takes in a Graphics argument to draw the button
-    public void drawButt(Graphics g){
+    public void drawBut(Graphics g){
     	//only draws if it isn't locked
     	if(!locked){
     		//draws the rect
