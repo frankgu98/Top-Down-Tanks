@@ -11,7 +11,8 @@ import java.util.*;
 import java.awt.*;
 
 public class Bullet {
-	private double x,y,w,h,vx,vy,speed,travelled;//x coord,y coord,width,height,velocity in x,velocity in y,speed,how far it travelled
+	//x coord,y coord,width,height,velocity in x,velocity in y,speed,how far it travelled
+	private double x,y,w,h,vx,vy,speed,travelled;
 	//contructor takes in information normally
     public Bullet(double x,double y,double w,double h, double ang, double speed){
     	this.x=x;

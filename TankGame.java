@@ -23,9 +23,6 @@ import javax.sound.sampled.*;
 
 
 public class TankGame extends JFrame implements ActionListener{
-	public static final int MENU=0;
-	public static final int GAME=1;
-	public static final int CONTROLS=2;
 	javax.swing.Timer myTimer;   
 	GamePanel game;
 	
@@ -35,7 +32,6 @@ public class TankGame extends JFrame implements ActionListener{
 		setSize(1205,928);
 		myTimer = new javax.swing.Timer(10, this);	 // trigger every 10 ms
 		game = new GamePanel(this);
-		
 		add(game);
 		setResizable(false);
 		setVisible(true);
@@ -58,7 +54,7 @@ public class TankGame extends JFrame implements ActionListener{
 }
 
 //for death: show explosion, wait a while, switch maps
-class GamePanel extends JPanel implements KeyListener,MouseMotionListener, MouseListener{
+class GamePanel extends JPanel implements KeyListener,MouseListener{
 	public static final int MENU=0;
 	public static final int GAME=1;
 	public static final int CONTROLS=2;
@@ -83,7 +79,6 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 		mainFrame = m;
 		setSize(1200,900);
         addKeyListener(this);
-        addMouseMotionListener(this);
 		addMouseListener(this);
 		clickx=-1;
 		clicky=-1;
@@ -120,8 +115,6 @@ class GamePanel extends JPanel implements KeyListener,MouseMotionListener, Mouse
 		clickx=e.getX();
 		clicky=e.getY();	
 	}
-	public void mouseMoved(MouseEvent e){}
-	public void mouseDragged(MouseEvent e){}
 	public void mouseExited(MouseEvent e){}
 	public void mouseEntered(MouseEvent e){}
 	public void mouseReleased(MouseEvent e){}

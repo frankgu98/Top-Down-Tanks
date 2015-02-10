@@ -14,7 +14,8 @@ import java.awt.geom.*;
 import java.awt.image.*;
 import java.io.*;
 public class FButton {
-	private int x,y,w,h,textx,texty,fontsize;//x coord,y coord,width,height,x coord of start of text,y coord of start of text,font size
+	//x coord,y coord,width,height,x coord of start of text,y coord of start of text,font size
+	private int x,y,w,h,textx,texty,fontsize;
 	private boolean locked;//if the button is locked
 	private String text;//text associated with the button
 	//contructor takes in information normally

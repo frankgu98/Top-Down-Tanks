@@ -3,10 +3,9 @@
  *
  * @Frank Gu
  *	Tank class made to be controlled by players in TankGame
+ *	
  * @version 1.00 2015/1/13
  */
-
-//moving and speed are pretty similar
 
 import java.util.*;
 import java.awt.*;
@@ -17,9 +16,12 @@ import java.io.*;
 public class Tank {
 	private Image pic;
 	private Image[] deathframes;
+	//x coord,y coord,width,height,angle,speed,midpoint x,midpoint y,velocity in x,velocity in y,frame Tank is in in death animation
 	private double x,y,w,h,angle,speed,mx,my,vx,vy,deathind;
+	//time until Tank can shoot,if the Tank is going forward (1), reverse (-1), stationary (0)
 	private int shootdelay,moving;
-	private boolean dying;
+	private boolean dying;//if the tank is dying (in the dying animations)
+	//contructor takes in information from a text file
     public Tank(String in) {
     	String[] info=in.split(",");
     	x=Double.parseDouble(info[0]);
@@ -28,37 +30,44 @@ public class Tank {
     	h=Double.parseDouble(info[3]);
     	angle=Double.parseDouble(info[4]);
 		speed=Double.parseDouble(info[5]);
+		mx=x+w/2;
+    	my=y+h/2;
     	vx=speed*Math.cos(Math.toRadians(angle));
     	vy=speed*Math.sin(Math.toRadians(angle));
-    	mx=x+w/2;
-    	my=y+h/2;
+    	deathind=0;//this also allows me to not have to reset deathind every new map since a new Tank is initialized after someone dies
     	shootdelay=0;
-    	moving=0;
     	pic=new ImageIcon("images/"+info[6]).getImage();
+    	//death animation is the same for all Tanks
     	deathframes=new Image[15];
     	for (int i=0;i<15;i++){
     		deathframes[i]=new ImageIcon("images/explosion/explosion"+i+".png").getImage();	
     	}
     	dying=false;
-    	deathind=0;//new tank created every new map, no need to reset deathind
+    	moving=0;
     }
 
+	//returns a Bulletbased on the Tank's position
     public Bullet shoot(){
-	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle+Math.random()*6-3,6);//-3 on mx and my needed to center bullet
-	    shootdelay=30;//20
+    	//Bullet is generaed outside the Tank to prevent collision with the Tank that shot it,small spray created by Math.random() which can be up to 
+    	//3 degrees in either direction,-3 on mx and my needed to center Bullet
+	    Bullet b= new Bullet(mx+.25*speed*w*Math.cos(Math.toRadians(angle))-3,my+.25*speed*h*Math.sin(Math.toRadians(angle))-3,8,8,angle+Math.random()*6-3,6);
+	    shootdelay=30;
     	return b;
     }
     
+    //reduces delay left until Tank can shoot again
     public void delayer(){
     	shootdelay=Math.max(shootdelay-1,0);
     }
-
+    
+	//turns the Tank by a certain amount (in degrees)
     public void turn(double amount){
     	angle=(angle+amount)%360;
     	vx=speed*Math.cos(Math.toRadians(angle));
     	vy=speed*Math.sin(Math.toRadians(angle));	
     }
     
+    //check if a Bullet is colliding with the Tank
     public boolean bulCollide(Bullet b){
     	double bx=b.getX();
     	double by=b.getY();
@@ -77,7 +86,7 @@ public class Tank {
 	
 	//moves the tank
 	//a tank technically "moves" every tick but since it's not always in the moving state, it doesn't always move
-	//it's in the moving state if pressing the up or down arrow
+	//a Tank is in the moving state
     public void move(){
     	x+=vx*moving;
     	y+=vy*moving;
